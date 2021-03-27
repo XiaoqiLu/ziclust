@@ -15,4 +15,12 @@ test_that("Hamiltanion of Ising is correct", {
     ),
     1
   )
+  expect_equal(
+    hamiltonian_ising(
+      u = matrix(c(-1, +1, +1, -1), 2, 2, byrow = TRUE),
+      h = c(2, 3),
+      J = matrix(0, 2, 2)
+    ),
+    c(-1, 1)
+  )
 })
