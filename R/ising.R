@@ -9,5 +9,5 @@
 #'
 #' @examples
 hamiltonian_ising <- function(u, h, J) {
-  return(as.numeric(- t(h) %*% u - t(u) %*% J %*% u / 2))
+  return(-as.numeric(t(h) %*% u + t(u) %*% J %*% u / 2))
 }

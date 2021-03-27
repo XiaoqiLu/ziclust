@@ -7,4 +7,12 @@ test_that("Hamiltanion of Ising is correct", {
     ),
     -1
   )
+  expect_equal(
+    hamiltonian_ising(
+      u = c(+1, +1),
+      h = c(0, 0),
+      J = matrix(c(0, -1, -1, 0), 2, 2)
+    ),
+    1
+  )
 })
