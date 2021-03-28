@@ -25,7 +25,7 @@ test_that("Hamiltanion of Ising is correct", {
   )
 })
 
-test_that("Fast computation of diff in Hamilton (flipping one variable) is correct", {
+test_that("fast computation of diff in Hamilton (flipping one variable) is correct", {
   h <- c(2, 3)
   J <- matrix(c(0, -1, -1, 0), 2, 2)
 

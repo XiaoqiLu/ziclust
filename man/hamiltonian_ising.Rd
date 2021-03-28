@@ -4,7 +4,7 @@
 \alias{hamiltonian_ising}
 \title{Hamiltonian of Generalized Ising Model}
 \usage{
-hamiltonian_ising(u, h, J)
+hamiltonian_ising(u, h, J = NULL)
 }
 \arguments{
 \item{u}{a binary ({-1, 1}-valued) vector or matrix. If \code{u} is a matrix, each
@@ -12,7 +12,8 @@ row is taken as an input vector.}
 
 \item{h}{a vector giving the external field.}
 
-\item{J}{a symmetric matrix with zero diagonals giving the interaction.}
+\item{J}{a symmetric matrix with zero diagonals giving the interaction. If
+\code{J} is \code{NULL}, the model degenerates to the case of independent binary.}
 }
 \value{
 a vector giving the energy of configuration u

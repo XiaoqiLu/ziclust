@@ -2,3 +2,5 @@
 
 export(diff_flipped_hamiltonian_ising)
 export(hamiltonian_ising)
+export(logistic)
+export(rowwise_kronecker)

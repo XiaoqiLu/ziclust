@@ -7,7 +7,8 @@
 #' @param u a binary ({-1, 1}-valued) vector or matrix. If `u` is a matrix, each
 #' row is taken as an input vector.
 #' @param h a vector giving the external field.
-#' @param J a symmetric matrix with zero diagonals giving the interaction.
+#' @param J a symmetric matrix with zero diagonals giving the interaction. If
+#' `J` is `NULL`, the model degenerates to the case of independent binary.
 #'
 #' @details
 #' The generalized Ising model (also known as quadratic exponential binary
@@ -31,14 +32,13 @@
 #'   h = c(2, 3),
 #'   J = matrix(0, 2, 2)
 #' )
-hamiltonian_ising <- function(u, h, J) {
-  if (is.vector(u)) {
-    return(-as.numeric(t(h) %*% u + t(u) %*% J %*% u / 2))
-  } else if (is.matrix(u)) {
-    return(apply(u, 1, hamiltonian_ising, h = h, J = J))
-  } else {
-    stop("type error: u should be a vector or matrix")
+hamiltonian_ising <- function(u, h, J = NULL) {
+  if (is.vector(u)) u <- matrix(u, nrow = 1)
+  energy <- -u %*% h
+  if (!is.null(J)) {
+    energy <- energy - rowwise_kronecker(u, u) %*% as.vector(J) / 2
   }
+  return(as.vector(energy))
 }
 
 #' Diff in Hamiltonian of Generalized Ising Model by Flipping a Variable
@@ -76,14 +76,30 @@ diff_flipped_hamiltonian_ising <- function(u, j, h, J) {
   )
 }
 
-# gibbs_ising <- function(u, h, J, n_step = 1) {
-#   if (is.vector(u)) u <- matrix(u, nrow = 1)
-#   energy <- hamiltonian_ising(u, h, J)
-#   for (i_step in 1 : n_step) {
-#     for (j in 1 : col(u)) {
-#       u[j, ] <- - u[j, ] # flip the j-th column
-#       energy_flipped <- hamiltonian_ising(u, h, J)
-#
-#     }
-#   }
-# }
+#' #' Gibbs Sampler for Generalized Ising Model
+#' #'
+#' #' @description
+#' #' `gibbs_ising` is a Gibbs sampler generates data from Ising model, provided
+#' #' starting config and model parameters. It is recommended that user uses a
+#' #' multi-chain approach, that is, providing a matrix `u`.
+#' #'
+#' #' @param n_step the number of Gibbs steps, default = 1
+#' #' @inheritParams hamiltonian_ising
+#' #'
+#' #' @return
+#' #' @export
+#' #'
+#' #' @examples
+#' gibbs_ising <- function(u, h, J, n_step = 1) {
+#'   if (is.vector(u)) u <- matrix(u, nrow = 1)
+#'   dim_u <- dim(u)
+#'   for (i_step in 1 : n_step) {
+#'     for (j in 1 : dim_u[2]) {
+#'       energy_diff_flipped <- diff_flipped_hamiltonian_ising(u, j, h, J)
+#'       p_flipped <- logistic(energy_diff_flipped)
+#'       sign_flipped <- 2 * (runif(dim_u[1]) < p_flipped) - 1
+#'       u[, j] <- sign_flipped * u[, j]
+#'     }
+#'   }
+#'   return(u)
+#' }
