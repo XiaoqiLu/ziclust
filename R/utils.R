@@ -40,7 +40,8 @@ logistic <- function(x) {
 #'     1, 2,
 #'     1, 3
 #'   ),
-#'   3, 2, byrow = TRUE
+#'   3, 2,
+#'   byrow = TRUE
 #' )
 #' y <- matrix(
 #'   c(
@@ -48,7 +49,8 @@ logistic <- function(x) {
 #'     0, 1,
 #'     1, 1
 #'   ),
-#'   3, 2, byrow = TRUE
+#'   3, 2,
+#'   byrow = TRUE
 #' )
 #' rowwise_kronecker(x, y)
 rowwise_kronecker <- function(x, y) {

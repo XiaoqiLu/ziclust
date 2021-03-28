@@ -11,7 +11,8 @@ test_that("rowwise kronecker function is correect", {
       1, 2,
       1, 3
     ),
-    3, 2, byrow = TRUE
+    3, 2,
+    byrow = TRUE
   )
   y <- matrix(
     c(
@@ -19,7 +20,8 @@ test_that("rowwise kronecker function is correect", {
       0, 1,
       1, 1
     ),
-    3, 2, byrow = TRUE
+    3, 2,
+    byrow = TRUE
   )
   expect_equal(
     rowwise_kronecker(x, y),
@@ -28,8 +30,9 @@ test_that("rowwise kronecker function is correect", {
         1, 1, 0, 0,
         0, 0, 1, 2,
         1, 3, 1, 3
-        ),
-      3, 4, byrow = TRUE
+      ),
+      3, 4,
+      byrow = TRUE
     )
   )
 })
