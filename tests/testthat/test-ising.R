@@ -8,8 +8,9 @@ test_that("Hamiltanion of Ising is correct", {
         c(
           0, -1,
           -1, 0
-          ),
-        2, 2, byrow = TRUE
+        ),
+        2, 2,
+        byrow = TRUE
       )
     ),
     1
@@ -21,9 +22,10 @@ test_that("Hamiltanion of Ising is correct", {
         c(
           -1, +1,
           +1, -1
-          ),
-        2, 2, byrow = TRUE
         ),
+        2, 2,
+        byrow = TRUE
+      ),
       h = c(2, 3),
       J = matrix(0, 2, 2)
     ),
@@ -37,7 +39,8 @@ test_that("Hamiltanion of Ising is correct", {
           -1, +1,
           +1, -1
         ),
-        2, 2, byrow = TRUE
+        2, 2,
+        byrow = TRUE
       ),
       h = c(2, 3)
     ),
@@ -51,8 +54,9 @@ test_that("fast computation of diff in Hamilton (flipping one variable) is corre
     c(
       0, -1,
       -1, 0
-      ),
-    2, 2, byrow = TRUE
+    ),
+    2, 2,
+    byrow = TRUE
   )
   # test for vector case
   u <- c(-1, +1)
@@ -67,15 +71,17 @@ test_that("fast computation of diff in Hamilton (flipping one variable) is corre
     c(
       -1, +1,
       +1, -1
-      ),
-    2, 2, byrow = TRUE
+    ),
+    2, 2,
+    byrow = TRUE
   )
   u_flipped <- matrix(
     c(
       +1, +1,
       -1, -1
-      ),
-    2, 2, byrow = TRUE
+    ),
+    2, 2,
+    byrow = TRUE
   ) # j = 1
   energy_diff <- hamiltonian_ising(u_flipped, h, J) - hamiltonian_ising(u, h, J)
   expect_equal(

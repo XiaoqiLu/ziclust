@@ -106,8 +106,8 @@ gibbs_ising <- function(u, h, J, n_step = 1) {
   if (is.vector(u)) u <- matrix(u, nrow = 1)
   dim_u <- dim(u)
 
-  for (i_step in 1 : n_step) {
-    for (j in 1 : dim_u[2]) {
+  for (i_step in 1:n_step) {
+    for (j in 1:dim_u[2]) {
       energy_diff_flipped <- diff_flipped_hamiltonian_ising(u, j, h, J)
       p_flipped <- logistic(energy_diff_flipped)
       sign_flipped <- 2 * (stats::runif(dim_u[1]) < p_flipped) - 1
