@@ -2,9 +2,9 @@
 % Please edit documentation in R/ising.R
 \name{diff_flipped_hamiltonian_ising}
 \alias{diff_flipped_hamiltonian_ising}
-\title{Diff in Hamiltonian of Generalized Ising Model by Flipping a Variable}
+\title{Diff in Energy of Generalized Ising Model by Single Flip}
 \usage{
-diff_flipped_hamiltonian_ising(u, j, h, J)
+diff_flipped_hamiltonian_ising(u, j, h, J = NULL)
 }
 \arguments{
 \item{u}{a binary ({-1, 1}-valued) vector or matrix. If \code{u} is a matrix, each

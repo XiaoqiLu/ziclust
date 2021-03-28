@@ -34,14 +34,15 @@
 #' )
 hamiltonian_ising <- function(u, h, J = NULL) {
   if (is.vector(u)) u <- matrix(u, nrow = 1)
-  energy <- -u %*% h
-  if (!is.null(J)) {
-    energy <- energy - rowwise_kronecker(u, u) %*% as.vector(J) / 2
+
+  if (is.null(J)) {
+    return(as.vector(-u %*% h))
+  } else {
+    return(as.vector(-u %*% h - rowwise_kronecker(u, u) %*% as.vector(J) / 2))
   }
-  return(as.vector(energy))
 }
 
-#' Diff in Hamiltonian of Generalized Ising Model by Flipping a Variable
+#' Diff in Energy of Generalized Ising Model by Single Flip
 #'
 #' @description
 #' `diff_flipped_hamilton_ising` is a fast-computation method for energy
@@ -66,40 +67,52 @@ hamiltonian_ising <- function(u, h, J = NULL) {
 #'
 #' u <- matrix(c(-1, +1, +1, -1), 2, 2, byrow = TRUE)
 #' diff_flipped_hamiltonian_ising(u, 1, h, J)
-diff_flipped_hamiltonian_ising <- function(u, j, h, J) {
+diff_flipped_hamiltonian_ising <- function(u, j, h, J = NULL) {
   if (is.vector(u)) u <- matrix(u, nrow = 1)
-  return(
-    as.vector(
-      2 * u[, j, drop = FALSE] *
-        (h[j] + u[, -j, drop = FALSE] %*% J[-j, j, drop = FALSE])
+
+  if (is.null(J)) {
+    return(as.vector(2 * u[, j, drop = FALSE] * h[j]))
+  } else {
+    return(
+      as.vector(
+        2 * u[, j, drop = FALSE] *
+          (h[j] + u[, -j, drop = FALSE] %*% J[-j, j, drop = FALSE])
+      )
     )
-  )
+  }
 }
 
-#' #' Gibbs Sampler for Generalized Ising Model
-#' #'
-#' #' @description
-#' #' `gibbs_ising` is a Gibbs sampler generates data from Ising model, provided
-#' #' starting config and model parameters. It is recommended that user uses a
-#' #' multi-chain approach, that is, providing a matrix `u`.
-#' #'
-#' #' @param n_step the number of Gibbs steps, default = 1
-#' #' @inheritParams hamiltonian_ising
-#' #'
-#' #' @return
-#' #' @export
-#' #'
-#' #' @examples
-#' gibbs_ising <- function(u, h, J, n_step = 1) {
-#'   if (is.vector(u)) u <- matrix(u, nrow = 1)
-#'   dim_u <- dim(u)
-#'   for (i_step in 1 : n_step) {
-#'     for (j in 1 : dim_u[2]) {
-#'       energy_diff_flipped <- diff_flipped_hamiltonian_ising(u, j, h, J)
-#'       p_flipped <- logistic(energy_diff_flipped)
-#'       sign_flipped <- 2 * (runif(dim_u[1]) < p_flipped) - 1
-#'       u[, j] <- sign_flipped * u[, j]
-#'     }
-#'   }
-#'   return(u)
-#' }
+#' Gibbs Sampler for Generalized Ising Model
+#'
+#' @description
+#' `gibbs_ising` is a Gibbs sampler generates data from Ising model, provided
+#' starting config and model parameters. It is recommended that user uses a
+#' multi-chain approach, that is, providing a matrix `u`.
+#'
+#' @param n_step the number of Gibbs steps, default = 1
+#' @inheritParams hamiltonian_ising
+#'
+#' @return config after Gibbs updates
+#' @export
+#'
+#' @examples
+#' n <- 1000
+#' p <- 3
+#' h <- rnorm(p)
+#' J <- matrix(0, p, p)
+#' u <- matrix(2 * (runif(n * p) < 0.5) - 1, n, p)
+#' gibbs_ising(u, h, J)
+gibbs_ising <- function(u, h, J, n_step = 1) {
+  if (is.vector(u)) u <- matrix(u, nrow = 1)
+  dim_u <- dim(u)
+
+  for (i_step in 1 : n_step) {
+    for (j in 1 : dim_u[2]) {
+      energy_diff_flipped <- diff_flipped_hamiltonian_ising(u, j, h, J)
+      p_flipped <- logistic(energy_diff_flipped)
+      sign_flipped <- 2 * (stats::runif(dim_u[1]) < p_flipped) - 1
+      u[, j] <- sign_flipped * u[, j]
+    }
+  }
+  return(u)
+}
