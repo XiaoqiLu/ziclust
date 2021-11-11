@@ -1,0 +1,76 @@
+---
+title: "sleep"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{sleep}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(ziclust)
+library(tidyverse)
+```
+
+```{r}
+
+sleep %>% nrow()
+
+sleep %>% ncol()
+
+sleep %>% head()
+
+sleep %>% summarise(n_subjects = n_distinct(subject_id))
+
+sleep %>%
+  group_by(subject_id) %>%
+  summarise(n_dates = n_distinct(date)) %>%
+  ggplot(aes(x = n_dates)) +
+  geom_histogram(binwidth = 1)
+
+sleep %>%
+  ggplot(aes(x = sleep_onset, y = (ifelse(wake_onset < sleep_onset, wake_onset + 3600 * 24, wake_onset) - sleep_onset) / 3600))  +
+  geom_point() +
+  # geom_abline(slope = 1, intercept = 0) +
+  # geom_abline(slope = 0, intercept = 3600 * 24, linetype = 2) +
+  xlab("Sleep Onset") +
+  ylab("Sleep Duration") +
+  coord_polar(theta = "x", direction = 1) +
+  ylim(0, NA)
+
+sleep %>%
+  filter(sleep_onset < 10000) %>%
+  filter(wake_onset < 20000)
+
+time_window <- data.frame(
+  start = c(0, 4, 8, 12, 16, 18) * 3600,
+  end = c(4, 8, 12, 16, 18, 24) * 3600
+)
+
+is_overlapped <- function(sleep_onset, wake_onset, window_start, window_end) {
+  wake_onset <- ifelse(wake_onset < sleep_onset, wake_onset + 3600 * 24, wake_onset)
+  (sleep_onset < window_end) & (wake_onset > window_end)
+}
+
+sleep_window <- list()
+for (i_window in 1 : nrow(time_window)) {
+  window_start <- time_window$start[i_window]
+  window_end <- time_window$end[i_window]
+  sleep_window[paste0("window", window_start / 3600, "_", window_end / 3600)] <-
+    sleep %>% mutate(a = is_overlapped(sleep_onset, wake_onset, window_start, window_end)) %>% select(a)
+}
+sleep_window <- as.data.frame(sleep_window)
+
+image(y = 1 : nrow(sleep), x = 1 : nrow(time_window), z = t(as.matrix(sleep_window)), xlab = "window", ylab = "subject")
+
+sleep_combined <- cbind(sleep, sleep_window)
+
+sleep_combined %>% head()
+```
