@@ -2,20 +2,20 @@
 % Please edit documentation in R/abstract.R
 \name{generate_data}
 \alias{generate_data}
-\title{S3 generic \code{generate_data}}
+\title{S3 generic \code{generate_data} as RNG}
 \usage{
-generate_data(n, model, ...)
+generate_data(model, n, ...)
 }
 \arguments{
-\item{n}{sample size}
-
 \item{model}{object of class \code{mdl}}
 
-\item{...}{}
+\item{n}{sample size}
+
+\item{...}{arguments to be passed to methods}
 }
 \value{
 generated data, usually a matrix with \code{n} rows
 }
 \description{
-S3 generic \code{generate_data}
+S3 generic \code{generate_data} as RNG
 }

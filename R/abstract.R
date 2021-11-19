@@ -7,8 +7,6 @@
 #'
 #' @return newly created object
 #' @export
-#'
-#' @examples
 new_mdl <- function(params, hyper_params, ..., class = character()) {
   structure(
     params,
@@ -18,55 +16,128 @@ new_mdl <- function(params, hyper_params, ..., class = character()) {
   )
 }
 
-#' S3 generic `generate_data`
+#' S3 generic `generate_data` as RNG
 #'
-#' @param n sample size
 #' @param model object of class `mdl`
-#' @param ...
+#' @param n sample size
+#' @param ... arguments to be passed to methods
 #'
 #' @return generated data, usually a matrix with `n` rows
 #' @export
-#'
-#' @examples
-generate_data <- function(n, model, ...) {
+generate_data <- function(model, n, ...) {
   stopifnot(inherits(model, "mdl"))
   UseMethod("generate_data")
 }
 
-# log_prob <- function(model, X, ...) {
-#   stopifnot(inherits(model, "mdl"))
-#   X <- as.matrix(X)
-#   UseMethod("log_prob")
-# }
-#
-# log_lik <- function(model, X, weights = NULL, ...) {
-#   stopifnot(inherits(model, "mdl"))
-#   X <- as.matrix(X)
-#   if (is.null(weights)) {
-#     weights <- rep(1, nrow(X))
-#   } else {
-#     stopifnot((length(weights) == nrow(X)) && all(weights >= 0))
-#   }
-#   sum(weights * log_prob(model, X, ...))
-# }
-#
-# dof <- function(model, ...) {
-#   stopifnot(inherits(model, "mdl"))
-#   UseMethod("dof")
-# }
-#
-# aic <- function(model, X, ...) {
-#   stopifnot(inherits(model, "mdl"))
-#   2 * dof(model, ...) - 2 * log_lik(model, X, ...)
-# }
-#
-# bic <- function(model, X, ...) {
-#   stopifnot(inherits(model, "mdl"))
-#   nrow(X) * dof(model, ...) - 2 * log_lik(model, X, ...)
-# }
-#
-# fit <- function(model, X, ...) {
-#   stopifnot(inherits(model, "mdl"))
-#   X <- as.matrix(X)
-#   UseMethod("fit")
-# }
+#' S3 generic `log_prob` to compute log probability for each data point
+#'
+#' @param model object of class `mdl`
+#' @param X data matrix
+#' @param ... arguments to be passed to methods
+#'
+#' @return log probability, a numeric vector
+#' @export
+log_prob <- function(model, X, ...) {
+  stopifnot(inherits(model, "mdl"))
+  X <- as.matrix(X)
+  UseMethod("log_prob")
+}
+
+#' Assert weights given data set
+#'
+#' @param weights weights of observations
+#' @param X data matrix
+#'
+#' @return weights
+#' @export
+#'
+#' @examples
+#' w <- c(1, 2, 3)
+#' X <- matrix(1 : 6, 3, 2)
+#' assert_weights(w, X)
+#'
+#' \dontrun{
+#' w <- c(-1, 2, 3)
+#' X <- matrix(1 : 6, 3, 2)
+#' assert_weights(w, X)
+#' }
+assert_weights <- function(weights, X) {
+  stopifnot((length(weights) == nrow(X)) && all(weights >= 0))
+  invisible(weights)
+}
+
+#' Compute Log-likelihood
+#'
+#' @inheritParams log_prob
+#' @param weights weights of observations
+#' @param ... arguments to be passed to `log_prob`
+#'
+#' @return log-likelihood, a numeric value
+#' @export
+log_lik <- function(model, X, weights = rep(1, nrow(X)), ...) {
+  stopifnot(inherits(model, "mdl"))
+  X <- as.matrix(X)
+  assert_weights(weights, X)
+  sum(weights * log_prob(model, X, ...))
+}
+
+#' S3 generic `dof` to compute degree of freedom
+#'
+#' @param model object of class `mdl`
+#'
+#' @return degree of freedom, a numeric value
+#' @export
+dof <- function(model) {
+  stopifnot(inherits(model, "mdl"))
+  UseMethod("dof")
+}
+
+#' Compute AIC
+#'
+#' @inheritParams log_lik
+#' @param ... arguments to be passed to `log_lik`
+#'
+#' @return AIC, a numeric value
+#' @export
+aic <- function(model, X, weights = rep(1, nrow(X)), ...) {
+  stopifnot(inherits(model, "mdl"))
+  2 * dof(model) - 2 * log_lik(model, X, weights, ...)
+}
+
+#' Compute BIC
+#'
+#' @inheritParams log_lik
+#' @param ... arguments to be passed to `log_lik`
+#'
+#' @return BIC, a numeric value
+#' @export
+bic <- function(model, X, weights = rep(1, nrow(X)), ...) {
+  stopifnot(inherits(model, "mdl"))
+  nrow(X) * dof(model) - 2 * log_lik(model, X, weights, ...)
+}
+
+#' S3 generic `fit` to fit model parameter given data set
+#'
+#' @inheritParams log_lik
+#' @param ... arguments to be passed to methods
+#'
+#' @return fitted model
+#' @export
+fit <- function(model, X, weights, ...) {
+  stopifnot(inherits(model, "mdl"))
+  X <- as.matrix(X)
+  UseMethod("fit")
+}
+
+#' S3 generic `init_params` to initialize model parameters given data set
+#'
+#' @inheritParams log_prob
+#' @param ... arguments to be passed to methods
+#'
+#' @return model with parameters initialized
+#' @export
+init_params <- function(model, X, ...) {
+  stopifnot(inherits(model, "mdl"))
+  X <- as.matrix(X)
+  UseMethod("init_params")
+}

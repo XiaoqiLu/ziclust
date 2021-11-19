@@ -7,7 +7,9 @@
 new_gaussian_mdl(params, hyper_params)
 }
 \arguments{
-\item{hyper_params}{}
+\item{params}{parameters of the model}
+
+\item{hyper_params}{hyper parameters (e.g. learning rate, regularization)}
 }
 \value{
 object of class \code{gaussian_mdl}

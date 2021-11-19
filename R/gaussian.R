@@ -1,12 +1,9 @@
 #' Constructor of S3 class `gaussian_mdl`, it is a subclass of `mdl`
 #'
-#' @param params
-#' @param hyper_params
+#' @inheritParams new_mdl
 #'
 #' @return object of class `gaussian_mdl`
 #' @export
-#'
-#' @examples
 new_gaussian_mdl <- function(params, hyper_params) {
   new_mdl(
     params,
@@ -21,8 +18,6 @@ new_gaussian_mdl <- function(params, hyper_params) {
 #'
 #' @return itself
 #' @export
-#'
-#' @examples
 validate_gaussian_mdl <- function(model) {
   params <- unclass(model)
   hyper_params <- attr(model, "hyper_params")
@@ -44,10 +39,51 @@ validate_gaussian_mdl <- function(model) {
   model
 }
 
+#' Create an object of S3 class `gaussian_mdl`
+#'
+#' @param mu a vector giving the means of the variables
+#' @param sigma a positive-definite symmetric matrix specifying the covariance matrix of the variables
+#' @param hyper_params hyperparameters (not implemented)
+#'
+#' @return object of class `gaussian_mdl`
+#' @export
+#'
+#' @examples
+#' gaussian_mdl(c(1, 2), matrix(c(1, 0, 0, 2), 2, 2))
 gaussian_mdl <- function(mu, sigma, hyper_params = list()) {
   params <- list(
     mu = as.vector(mu),
     sigma = as.matrix(sigma)
   )
   validate_gaussian_mdl(new_gaussian_mdl(params, hyper_params))
+}
+
+#' @export
+generate_data.gaussian_mdl <- function(model, n = 1, ...) {
+  mvtnorm::rmvnorm(n, mean = model$mu, sigma = model$sigma)
+}
+
+#' @export
+log_prob.gaussian_mdl <- function(model, X, ...) {
+  mvtnorm::dmvnorm(X, mean = model$mu, sigma = model$sigma, log = TRUE)
+}
+
+#' @export
+dof.gaussian_mdl <- function(model) {
+  d <- length(model$mu)
+  d + d * (d + 1) / 2
+}
+
+#' @export
+fit.gaussian_mdl <- function(model, X, weights = rep(1, nrow(X)), ...) {
+  assert_weights(weights, X)
+  cov_wt <- stats::cov.wt(X, weights, method = "ML")
+  model$mu <- cov_wt$center
+  model$sigma <- cov_wt$cov
+  model
+}
+
+#' @export
+init_params.gaussian_mdl <- function(model, X, ...) {
+  fit.gaussian_mdl(model, X, ...)
 }
