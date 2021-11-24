@@ -74,3 +74,30 @@ rdirichlet <- function(n, alphas) {
   Z <- matrix(stats::rgamma(n * g, shape = alphas, rate = 1), n, g, byrow = TRUE)
   Z / rowSums(Z)
 }
+
+#' Log-sum-exp
+#'
+#' @param x a numeric object
+#'
+#' @return `log(sum(exp(x)))`
+#' @export
+#'
+#' @examples
+#' log_sum_exp(c(1, 2, 30))
+log_sum_exp <- function(x) {
+  a <- max(x)
+  a + log(sum(exp(x - a)))
+}
+
+#' Softmax
+#'
+#' @param x a numeric object
+#'
+#' @return softmax, define as `exp(x) / sum(exp(x))`
+#' @export
+#'
+#' @examples
+#' soft_max(c(1, 2, 30))
+soft_max <- function(x) {
+  exp(x - log_sum_exp(x))
+}

@@ -4,12 +4,14 @@
 \alias{init_params}
 \title{S3 generic \code{init_params} to initialize model parameters given data set}
 \usage{
-init_params(model, X, ...)
+init_params(model, X, weights = rep(1, nrow(X)), ...)
 }
 \arguments{
 \item{model}{object of class \code{mdl}}
 
 \item{X}{data matrix}
+
+\item{weights}{weights of observations}
 
 \item{...}{arguments to be passed to methods}
 }

@@ -53,3 +53,15 @@ test_that("rng for Dirichlet distribution is correct (by checking moments)", {
   expect_equal(colMeans(Z), z_expectation, tolerance = 10 / sqrt(n))
   expect_equal(var(Z), z_covariance, tolerance = 10 / sqrt(n))
 })
+
+test_that("log-sum-exp works as expected", {
+  expect_equal(log_sum_exp(c(1, 2, 3)), log(sum(exp(c(1, 2, 3)))))
+  expect_equal(log_sum_exp(c(1, 2, 3000)), 3000)
+  expect_equal(log_sum_exp(c(-3000, -4000, -5000)), -3000)
+})
+
+test_that("soft_max works as expected", {
+  expect_equal(soft_max(c(1, 2, 3)), exp(c(1, 2, 3)) / sum(exp(c(1, 2, 3))))
+  expect_equal(soft_max(c(1, 2, 3000)),c(0, 0, 1))
+  expect_equal(soft_max(c(-3000, -4000, -5000)), c(1, 0, 0))
+})

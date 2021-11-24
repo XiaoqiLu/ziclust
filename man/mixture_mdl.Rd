@@ -20,6 +20,7 @@ object of class \code{mixture_mdl}
 Create an object of S3 class \code{mixture_mdl}
 }
 \examples{
-gm <- gaussian_mdl(c(1, 2), matrix(c(1, 0, 0, 2), 2, 2))
-mixture_mdl(c(0.2, 0.3, 0.5), rep(list(gm), 3))
+gm1 <- gaussian_mdl(c(1, 2), matrix(c(1, 0, 0, 2), 2, 2))
+gm2 <- gaussian_mdl(c(-5, -3), matrix(c(2, -1, -1, 1), 2, 2))
+mixture_mdl(c(0.2, 0.8), list(gm1, gm2))
 }

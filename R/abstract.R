@@ -113,7 +113,7 @@ aic <- function(model, X, weights = rep(1, nrow(X)), ...) {
 #' @export
 bic <- function(model, X, weights = rep(1, nrow(X)), ...) {
   stopifnot(inherits(model, "mdl"))
-  nrow(X) * dof(model) - 2 * log_lik(model, X, weights, ...)
+  log(nrow(X)) * dof(model) - 2 * log_lik(model, X, weights, ...)
 }
 
 #' S3 generic `fit` to fit model parameter given data set
@@ -131,12 +131,12 @@ fit <- function(model, X, weights, ...) {
 
 #' S3 generic `init_params` to initialize model parameters given data set
 #'
-#' @inheritParams log_prob
+#' @inheritParams log_lik
 #' @param ... arguments to be passed to methods
 #'
 #' @return model with parameters initialized
 #' @export
-init_params <- function(model, X, ...) {
+init_params <- function(model, X, weights = rep(1, nrow(X)), ...) {
   stopifnot(inherits(model, "mdl"))
   X <- as.matrix(X)
   UseMethod("init_params")

@@ -84,6 +84,7 @@ fit.gaussian_mdl <- function(model, X, weights = rep(1, nrow(X)), ...) {
 }
 
 #' @export
-init_params.gaussian_mdl <- function(model, X, ...) {
-  fit.gaussian_mdl(model, X, ...)
+init_params.gaussian_mdl <- function(model, X, weights = rep(1, nrow(X)), ...) {
+  assert_weights(weights, X)
+  fit.gaussian_mdl(model, X, weights, ...)
 }
